@@ -23,7 +23,7 @@ stations = Stations()
 stations = stations.nearby(lat, lon)
 station = stations.inventory('daily', (start, end)).fetch(1)
 
-df = Hourly(station, start, end).fetch() # returns a pandas dataframe
+df = Hourly(station, start, end).fetch()  # returns a pandas dataframe
 
 # Create a new dataframe containing only temperature values for midday, rounded to nearest int
 newdf = df["temp"][(df.index.hour == timeofday) & (df.index.minute == 0)].round(decimals=0).astype(int)
