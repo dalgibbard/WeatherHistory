@@ -28,7 +28,8 @@ def lookup_location(location):
     lat = response[0]["lat"]
     lon = response[0]["lon"]
     # Return tuple lat long
-    return lat, lon
+    print(f"Location Lookup: {location}\n Result -- lat: {lat} | lon: {lon}")
+    return float(lat), float(lon)
 
 
 def run(location, start, end, outputfile, timeofday):
@@ -36,7 +37,7 @@ def run(location, start, end, outputfile, timeofday):
     lat, lon = lookup_location(location)
 
     df = getStation(lat, lon, start, end)
-    print(df)
+    # print(df)
 
     # Create a new dataframe containing only temperature values for midday, rounded to nearest int
     newdf = df["temp"][(df.index.hour == timeofday) & (df.index.minute == 0)].round(decimals=0).astype(int)
@@ -45,7 +46,7 @@ def run(location, start, end, outputfile, timeofday):
 
     # Output to Excel sheet
     if outputfile is not None:
-        newdf.to_excel("2020-weather.xlsx", engine='xlsxwriter')
+        newdf.to_excel(outputfile, engine='xlsxwriter')
 
 
 # Get nearest station to location
@@ -63,7 +64,7 @@ def getStation(lat, lon, start, end):
         if end <= start:
             print("No matches for time query!")
             sys.exit(1)
-        return getStation(start, end)
+        return getStation(lat, lon, start, end)
     else:
         return df
 
@@ -75,13 +76,17 @@ def main():
         sys.exit(1)
 
     parser = GooeyParser(description="Historical temperature finder, for a certain time of day")
-    parser.add_argument('start', required=True, type=datetime, widget="DateChooser", help="Start Date")
-    parser.add_argument('end', required=True, type=datetime, widget="DateChooser", help="End Date")
-    parser.add_argument('output_file', required=False, widget="FileChooser", type=str, help="Output File Name")
-    parser.add_argument('location', required=True, default="Basildon, UK", type=str, help="Location to weather search")
-    parser.add_argument('timeofday', required=True, default=12, type=int)
+    parser.add_argument('start', type=str, widget="DateChooser", help="Start Date")
+    parser.add_argument('end', type=str, widget="DateChooser", help="End Date")
+    parser.add_argument('output_file', widget="FileChooser", type=str, help="Output File Name")
+    parser.add_argument('location', default="Basildon, UK", type=str, help="Location to weather search")
+    parser.add_argument('timeofday', default=12, type=int)
     args = parser.parse_args()
-    run(args.location, args.start, args.end, args.location, args.timeofday)
+    sl = args.start.split("-")
+    start = datetime(int(sl[0]), int(sl[1]), int(sl[2]))
+    el = args.end.split("-")
+    end = datetime(int(el[0]), int(el[1]), int(el[2]))
+    run(args.location, start, end, args.outputfile, args.timeofday)
 
 
 if __name__ == "__main__":
