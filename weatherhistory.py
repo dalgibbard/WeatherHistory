@@ -33,7 +33,7 @@ def lookup_location(location):
 
 
 def run(location, start, end, outputfile, timeofday):
-    Hourly.cache_dir = "/tmp/weather_cache"
+    Hourly.cache_dir = ".weather_cache"
     lat, lon = lookup_location(location)
 
     df = getStation(lat, lon, start, end)
@@ -45,8 +45,8 @@ def run(location, start, end, outputfile, timeofday):
     print(newdf)
 
     # Output to Excel sheet
-    if outputfile is not None:
-        newdf.to_excel(outputfile, engine='xlsxwriter')
+    print(f"Creating Output File: {outputfile}")
+    newdf.to_excel(outputfile, engine='xlsxwriter')
 
 
 # Get nearest station to location
@@ -69,8 +69,9 @@ def getStation(lat, lon, start, end):
         return df
 
 
-@Gooey()
+@Gooey(target="weatherhistory.exe")
 def main():
+    # TODO: Write to file what our script name is, so we can set the decorator target accordingly
     if "linux" in sys.platform and os.environ.get("DISPLAY") is None:
         print("Need a valid DISPLAY set!")
         sys.exit(1)
@@ -78,9 +79,9 @@ def main():
     parser = GooeyParser(description="Historical temperature finder, for a certain time of day")
     parser.add_argument('start', type=str, widget="DateChooser", help="Start Date")
     parser.add_argument('end', type=str, widget="DateChooser", help="End Date")
-    parser.add_argument('output_file', widget="FileSaver", type=str, help="Output File Name")
+    parser.add_argument('outputfile', widget="FileSaver", default="output.xlsx", gooey_options=dict(wildcard="Excel Spreadsheet (*.xlsx)|*.xlsx"), type=str, help="Output File Name")
     parser.add_argument('location', default="Basildon, UK", type=str, help="Location to weather search")
-    parser.add_argument('timeofday', default=12, type=int)
+    parser.add_argument('timeofday', default=12, type=int, help="Time of day (hour) to report time for")
     args = parser.parse_args()
     sl = args.start.split("-")
     start = datetime(int(sl[0]), int(sl[1]), int(sl[2]))
