@@ -69,7 +69,7 @@ def getStation(lat, lon, start, end):
         return df
 
 
-@Gooey
+@Gooey()
 def main():
     if "linux" in sys.platform and os.environ.get("DISPLAY") is None:
         print("Need a valid DISPLAY set!")
@@ -78,7 +78,7 @@ def main():
     parser = GooeyParser(description="Historical temperature finder, for a certain time of day")
     parser.add_argument('start', type=str, widget="DateChooser", help="Start Date")
     parser.add_argument('end', type=str, widget="DateChooser", help="End Date")
-    parser.add_argument('output_file', widget="FileChooser", type=str, help="Output File Name")
+    parser.add_argument('output_file', widget="FileSaver", type=str, help="Output File Name")
     parser.add_argument('location', default="Basildon, UK", type=str, help="Location to weather search")
     parser.add_argument('timeofday', default=12, type=int)
     args = parser.parse_args()
