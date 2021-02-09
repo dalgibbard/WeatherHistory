@@ -24,6 +24,10 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
+      
+      # Install/upgrade python wheel + setuptools
+      - name: Install wheel support
+        run: python -m pip install -U wheel setuptools
 
       # Install python deps
       - name: Install python deps
