@@ -69,7 +69,7 @@ def getStation(lat, lon, start, end):
         return df
 
 
-@Gooey(target="weatherhistory.exe")
+@Gooey()
 def main():
     # TODO: Write to file what our script name is, so we can set the decorator target accordingly
     if "linux" in sys.platform and os.environ.get("DISPLAY") is None:
